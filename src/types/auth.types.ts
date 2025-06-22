@@ -1,12 +1,17 @@
 import { t } from "elysia";
 
-const VerifyOtpSchema = t.Object({
-  otp: t.Number(),
+const VerifyLoginOtpSchema = t.Object({
   email: t.String(),
+  otp: t.Number(),
 });
-
 const GenerateOtpSchema = t.Object({
   email: t.String(),
+});
+const VerifySignupOtpSchema = t.Object({
+  name: t.String(),
+  password: t.String(),
+  email: t.Optional(t.String()),
+  otp: t.Number(),
 });
 
 const SignupSchema = t.Object({
@@ -19,14 +24,15 @@ const LoginSchema = t.Object({
   email: t.String(),
 });
 
-type OtpType = (typeof VerifyOtpSchema)["static"];
+type OtpType = (typeof VerifyLoginOtpSchema)["static"];
 type SignUpType = (typeof SignupSchema)["static"];
 
 export {
   SignUpType,
   OtpType,
-  VerifyOtpSchema,
+  VerifyLoginOtpSchema,
   GenerateOtpSchema,
   SignupSchema,
   LoginSchema,
+  VerifySignupOtpSchema,
 };

@@ -1,0 +1,16 @@
+CREATE TABLE "otps" (
+	"id" serial PRIMARY KEY NOT NULL,
+	"email" text,
+	"otp" integer
+);
+--> statement-breakpoint
+CREATE TABLE "users" (
+	"id" serial PRIMARY KEY NOT NULL,
+	"name" text,
+	"email" text,
+	"hashed_password" text,
+	"refresh_token" text,
+	"profile_pic" text,
+	"created_at" timestamp DEFAULT now(),
+	CONSTRAINT "users_email_unique" UNIQUE("email")
+);

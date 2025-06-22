@@ -2,23 +2,24 @@ import { Elysia } from "elysia";
 import "dotenv/config";
 import auth_routes from "./routes/auth.routes";
 import cors from "@elysiajs/cors";
+const BACKEND = process.env.BACKEND_URL;
+const FRONTEND = process.env.FRONTEND_URL;
+const PORT = process.env.BACKEND_PORT;
 
-const SERVER_PORT = process.env.SERVER_PORT;
-if (!SERVER_PORT) {
-  throw new Error("SERVER_PORT environment variable is not set");
+if (!BACKEND || !FRONTEND || !PORT) {
+  console.log(`[SERVER]  :  ENV missing  :  ${new Date().toLocaleString()}`);
+  throw new Error("[SYSTEM]    ENV missing");
 }
 
 const app = new Elysia({ prefix: "/api" })
-  .all("/", "Welcome to surfer!")
+  .all("/", "Welcome to Surfer API..!")
   .use(
     cors({
-      origin: "http://localhost:3000",
+      origin: FRONTEND,
       credentials: true,
     })
   )
   .use(auth_routes)
-  .listen(SERVER_PORT);
+  .listen(PORT);
 
-console.log(`Elysia is running at ${app.server?.hostname}:${app.server?.port}`);
-
-// CORS SETUP COMPLETED
+console.log(`[SERVER]  :  ${BACKEND}  :  ${new Date().toLocaleString()}`);

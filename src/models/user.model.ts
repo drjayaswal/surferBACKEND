@@ -1,13 +1,7 @@
-import {
-  pgTable,
-  serial,
-  text,
-  timestamp,
-  pgEnum,
-} from "drizzle-orm/pg-core";
+import { pgTable, serial, text, timestamp } from "drizzle-orm/pg-core";
 
 const user_model = pgTable("users", {
-  id: serial().primaryKey(),
+  id: text().primaryKey(),
   name: text(),
   email: text().unique(),
   hashed_password: text(),
@@ -15,6 +9,5 @@ const user_model = pgTable("users", {
   profile_pic: text(),
   created_at: timestamp().defaultNow(),
 });
-
 
 export { user_model };
