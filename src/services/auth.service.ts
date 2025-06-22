@@ -14,17 +14,10 @@ import { JwtPayload } from "jsonwebtoken";
 
 export const generate_otp = async (email: string) => {
   try {
-    const user_query_response = await find_user(email);
-    if (user_query_response.success) {
-      return user_query_response;
-    }
     const otp_query_response = await find_otp(email);
-    if (!otp_query_response.success) {
-      return otp_query_response;
-    }
     const otp = random_otp();
     if (otp_query_response.success) {
-      await db.update(otp_model).set({ otp });
+      await db.update(otp_model).set({ otp }).where(eq(otp_model.email, email));
     } else {
       await db.insert(otp_model).values({
         otp: otp,
@@ -40,6 +33,9 @@ export const generate_otp = async (email: string) => {
       message: "OTP Generated Successfully",
     };
   } catch (error) {
+    console.error(
+      `[SERVER]  :  Error generating OTP: ${error} :  ${new Date().toLocaleString()}`
+    );
     return {
       success: false,
       code: 500,
@@ -69,27 +65,25 @@ export const verify_otp = async (otp: number, email: string) => {
   }
 };
 export const create_user = async (
+  id: string,
   name: string,
   email: string,
-  password: string,
-  id: string
+  password: string
 ) => {
   try {
     const hashed_password = await hash_password(password);
     const refresh_token = generate_refresh_jwt(email, name);
     const access_token = generate_access_jwt(email, name);
-    const user = (
-      await db
-        .insert(user_model)
-        .values({
-          id,
-          name,
-          email,
-          hashed_password,
-          refresh_token,
-        })
-        .returning()
-    )[0];
+    await db
+      .insert(user_model)
+      .values({
+        id: id,
+        name: name,
+        email: email,
+        hashed_password: hashed_password,
+        refresh_token: refresh_token,
+      })
+      .returning();
     console.log(
       `[SERVER]  :  User Created Successfully  :  ${new Date().toLocaleString()}`
     );
@@ -98,11 +92,11 @@ export const create_user = async (
       code: 200,
       message: "User Created Successfully",
       data: {
-        id,
-        name,
-        email,
-        access_token,
-        refresh_token,
+        id: id,
+        name: name,
+        email: email,
+        access_token: access_token,
+        refresh_token: refresh_token,
       },
     };
   } catch (error) {
@@ -158,7 +152,7 @@ export const create_tokens = (email: string, name: string) => {
   const new_refresh_token = generate_refresh_jwt(email, name);
   const new_access_token = generate_access_jwt(email, name);
   return { new_refresh_token, new_access_token };
-};
+}
 export const handle_login_by_token = async (payload: JwtPayload) => {
   try {
     const { email, name } = payload;
@@ -306,14 +300,17 @@ export const handle_login_by_otp = async (otp: number, email: string) => {
     };
   }
 };
-export const handle_login = async (password: string, email: string) => {
+export const handle_login = async (email: string, password: string) => {
   try {
-    const user = await db
-      .select()
-      .from(user_model)
-      .where(eq(user_model.email, email))
-      .then((res) => res[0]);
-
+    console.log(email);
+    const user = (
+      await db
+        .select()
+        .from(user_model)
+        .where(eq(user_model.email, email))
+        .limit(1)
+    )[0];
+    console.log(user);
     if (!user) {
       console.log(
         `[SERVER]  :  User Not Found  :  ${new Date().toLocaleString()}`

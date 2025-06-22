@@ -16,12 +16,12 @@ const VerifySignupOtpSchema = t.Object({
 
 const SignupSchema = t.Object({
   name: t.String(),
-  password: t.String(),
   email: t.String(),
+  password: t.String(),
 });
 const LoginSchema = t.Object({
-  password: t.String(),
   email: t.String(),
+  password: t.String(),
 });
 
 type OtpType = (typeof VerifyLoginOtpSchema)["static"];

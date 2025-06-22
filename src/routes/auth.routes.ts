@@ -76,8 +76,8 @@ const auth_routes = new Elysia({ prefix: "/auth" })
       const create_user_query_response = await create_user(
         user_id,
         name,
-        password,
-        email
+        email,
+        password
       );
       if (!create_user_query_response.success) {
         set.status = create_user_query_response.code;
@@ -226,19 +226,22 @@ const auth_routes = new Elysia({ prefix: "/auth" })
           }
         }
       }
-      const { email } = body;
-      if (!email) {
+      const { email, password } = body;
+      if (!email || !password) {
         set.status = 404;
         console.log(
-          `[SERVER]   Email Missing : ${new Date().toLocaleString()}`
+          `[SERVER]   Email or Password Missing : ${new Date().toLocaleString()}`
         );
         return {
           success: false,
           code: 404,
-          message: "Email Missing",
+          message: "Email or Password Missing",
         };
       }
-      const response = await handle_login(body.password, email);
+      console.log(
+        `[SERVER]   Login Attempt-${email} : ${new Date().toLocaleString()}`
+      );
+      const response = await handle_login(email, password);
       if (
         response.success &&
         response.data?.refresh_token &&
@@ -324,7 +327,7 @@ const auth_routes = new Elysia({ prefix: "/auth" })
         `[SERVER]   Already Logged Out : ${new Date().toLocaleString()}`
       );
       return {
-        success: true,
+        success: false,
         message: "Already Logged Out",
       };
     }

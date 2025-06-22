@@ -22,4 +22,4 @@ const app = new Elysia({ prefix: "/api" })
   .use(auth_routes)
   .listen(PORT);
 
-console.log(`[SERVER]  :  ${BACKEND}  :  ${new Date().toLocaleString()}`);
+console.log(`[SERVER]  :  Server Connected  :  ${new Date().toLocaleString()}`);

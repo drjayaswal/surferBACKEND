@@ -3,7 +3,7 @@ import "dotenv/config";
 import bcrypt from "bcrypt";
 
 export const random_otp = () => {
-  return Math.floor(1000 + Math.random() * 9000);
+  return Math.floor(10000 + Math.random() * 90000);
 };
 export const create_unique_id = (type: string) => {
   return `${type.toUpperCase()}-${Date.now()}`;

@@ -31,7 +31,7 @@ const db_connect = () => {
     const db = drizzle({ client: client });
 
     console.log(
-      `[DATABASE]  :  DB Connected  :  ${new Date().toLocaleString()}`
+      `[DATABASE]  :  Database Connected  :  ${new Date().toLocaleString()}`
     );
 
     return db;
