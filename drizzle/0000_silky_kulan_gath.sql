@@ -10,7 +10,10 @@ CREATE TABLE "users" (
 	"email" text,
 	"hashed_password" text,
 	"refresh_token" text,
-	"profile_pic" text,
+	"avatar" text,
+	"avatar_uploaded_at" timestamp with time zone,
+	"bio" text,
+	"corpuses" jsonb[] DEFAULT '{}',
 	"created_at" timestamp DEFAULT now(),
 	CONSTRAINT "users_email_unique" UNIQUE("email")
 );

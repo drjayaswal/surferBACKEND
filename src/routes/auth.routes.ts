@@ -7,19 +7,14 @@ import {
 } from "../types/auth.types";
 import {
   create_tokens,
-  create_user,
-  generate_otp,
   handle_login,
   handle_login_by_otp,
   handle_login_by_token,
   validate_refresh_token,
-  verify_otp,
 } from "../services/auth.service";
-import {
-  create_unique_id,
-  verify_access_token,
-  verify_refresh_token,
-} from "../utils";
+import { create_unique_id, verify_access_token } from "../utils";
+import { generate_otp, verify_otp } from "../services/otp.service";
+import { create_user } from "../services/user.service";
 
 const auth_routes = new Elysia({ prefix: "/auth" })
 
@@ -95,7 +90,7 @@ const auth_routes = new Elysia({ prefix: "/auth" })
           value: create_user_query_response.data.access_token,
           httpOnly: true,
           secure: true,
-          maxAge: 60 * 60,
+          maxAge: 60 * 60 * 24,
           path: "/",
         });
         console.log(
@@ -109,7 +104,7 @@ const auth_routes = new Elysia({ prefix: "/auth" })
   )
 
   // REFRESH TOKENS
-  .post("/refresh-tokens", async ({ cookie, set }) => {
+  .get("/refresh-tokens", async ({ cookie, set }) => {
     const refresh_token = String(cookie.refresh_token);
     if (!refresh_token) {
       console.log(
@@ -142,7 +137,7 @@ const auth_routes = new Elysia({ prefix: "/auth" })
     if (
       !validate_refresh_token_response.data ||
       !validate_refresh_token_response.data.email ||
-      !validate_refresh_token_response.data.name
+      !validate_refresh_token_response.data.id
     ) {
       set.status = 500;
       console.log(
@@ -155,8 +150,8 @@ const auth_routes = new Elysia({ prefix: "/auth" })
       };
     }
 
-    const { email, name } = validate_refresh_token_response.data;
-    const tokens = create_tokens(email, name);
+    const { email, id } = validate_refresh_token_response.data;
+    const tokens = create_tokens(email, id);
 
     if (!tokens || !tokens.new_access_token || !tokens.new_refresh_token) {
       set.status = 500;
@@ -181,7 +176,7 @@ const auth_routes = new Elysia({ prefix: "/auth" })
       value: tokens.new_access_token,
       httpOnly: true,
       secure: true,
-      maxAge: 60 * 60,
+      maxAge: 60 * 60 * 24,
       path: "/",
     });
     set.status = 200;
@@ -218,9 +213,26 @@ const auth_routes = new Elysia({ prefix: "/auth" })
         ) {
           const login_response = await handle_login_by_token(payload);
           if (login_response.success) {
-            set.status = login_response.code;
             console.log(
               `[SERVER]   Already Logged In : ${new Date().toLocaleString()}`
+            );
+            set.status = login_response.code;
+            cookie["refresh_token"].set({
+              value: login_response.data?.refresh_token,
+              httpOnly: true,
+              secure: true,
+              maxAge: 60 * 60 * 24 * 7,
+              path: "/",
+            });
+            cookie["access_token"].set({
+              value: login_response.data?.access_token,
+              httpOnly: true,
+              secure: true,
+              maxAge: 60 * 60 * 24,
+              path: "/",
+            });
+            console.log(
+              `[SERVER]   Set Tokens to Cookies : ${new Date().toLocaleString()}`
             );
             return login_response;
           }
@@ -238,9 +250,6 @@ const auth_routes = new Elysia({ prefix: "/auth" })
           message: "Email or Password Missing",
         };
       }
-      console.log(
-        `[SERVER]   Login Attempt-${email} : ${new Date().toLocaleString()}`
-      );
       const response = await handle_login(email, password);
       if (
         response.success &&
@@ -258,7 +267,7 @@ const auth_routes = new Elysia({ prefix: "/auth" })
           value: response.data.access_token,
           httpOnly: true,
           secure: true,
-          maxAge: 60 * 60,
+          maxAge: 60 * 60 * 24,
           path: "/",
         });
         console.log(
@@ -304,7 +313,7 @@ const auth_routes = new Elysia({ prefix: "/auth" })
         value: response.data?.access_token,
         httpOnly: true,
         secure: true,
-        maxAge: 60 * 60,
+        maxAge: 60 * 60 * 24,
         path: "/",
       });
       console.log(

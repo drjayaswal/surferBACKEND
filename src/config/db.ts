@@ -23,7 +23,7 @@ const db_connect = () => {
       password: process.env.DB_PASSWORD,
       debug: function (_, query) {
         console.log(
-          `[DATABASE]  :  QUERY EXECUTED  :  ${new Date().toLocaleString()} \n ${query}`
+          `[DATABASE]  :  QUERY EXECUTED  :  ${new Date().toLocaleString()}`
         );
       },
     });

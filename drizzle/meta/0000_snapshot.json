@@ -1,5 +1,5 @@
 {
-  "id": "29624394-bf37-4b71-bb58-0720fc9f2a3f",
+  "id": "6b29a8e1-62eb-4582-9fdc-fd5b9c6575cc",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -69,11 +69,30 @@
           "primaryKey": false,
           "notNull": false
         },
-        "profile_pic": {
-          "name": "profile_pic",
+        "avatar": {
+          "name": "avatar",
           "type": "text",
           "primaryKey": false,
           "notNull": false
+        },
+        "avatar_uploaded_at": {
+          "name": "avatar_uploaded_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "bio": {
+          "name": "bio",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "corpuses": {
+          "name": "corpuses",
+          "type": "jsonb[]",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "'{}'"
         },
         "created_at": {
           "name": "created_at",

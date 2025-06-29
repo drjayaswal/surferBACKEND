@@ -1,4 +1,4 @@
-import { pgTable, serial, text, timestamp } from "drizzle-orm/pg-core";
+import { jsonb, pgTable, text, timestamp } from "drizzle-orm/pg-core";
 
 const user_model = pgTable("users", {
   id: text().primaryKey(),
@@ -6,7 +6,10 @@ const user_model = pgTable("users", {
   email: text().unique(),
   hashed_password: text(),
   refresh_token: text(),
-  profile_pic: text(),
+  avatar: text(),
+  avatar_uploaded_at: timestamp("avatar_uploaded_at", { withTimezone: true }),
+  bio: text(),
+  corpuses: jsonb("corpuses").array().default([]),
   created_at: timestamp().defaultNow(),
 });
 
