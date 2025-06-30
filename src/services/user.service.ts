@@ -1,6 +1,7 @@
 import { eq, sql } from "drizzle-orm";
 import db from "../config/db";
 import {
+  create_unique_id,
   generate_access_jwt,
   generate_refresh_jwt,
   hash_password,
@@ -136,6 +137,79 @@ export const upload_corpuses_to_database = async (
       success: false,
       code: 500,
       message: "Error: upload_corpuses_to_database",
+    };
+  }
+};
+export const upload_note_to_database = async (id: string, content: string) => {
+  try {
+    const note_id = create_unique_id("NOTE");
+
+    const newNote = {
+      note_id,
+      content: content,
+      created_at: new Date(),
+    };
+
+    const update_response = (
+      await db
+        .update(user_model)
+        .set({
+          notes: sql`array_append(notes, ${JSON.stringify(newNote)}::json)`,
+        })
+        .where(eq(user_model.id, id))
+        .returning()
+    )[0];
+
+    if (!update_response) {
+      return { success: false, code: 404, message: "No Such User" };
+    }
+
+    return {
+      success: true,
+      code: 200,
+      message: "Note added successfully",
+      note: newNote,
+    };
+  } catch (error) {
+    console.error("Database error:", error);
+    return {
+      success: false,
+      code: 500,
+      message: "Error: upload_note_to_database",
+    };
+  }
+};
+export const update_password_to_database = async (
+  id: string,
+  new_password: string
+) => {
+  try {
+    const hashed_password = await hash_password(new_password);
+    const update_response = (
+      await db
+        .update(user_model)
+        .set({
+          hashed_password: hashed_password,
+        })
+        .where(eq(user_model.id, id))
+        .returning()
+    )[0];
+
+    if (!update_response) {
+      return { success: false, code: 404, message: "No Such User" };
+    }
+
+    return {
+      success: true,
+      code: 200,
+      message: "Password Updated successfully",
+    };
+  } catch (error) {
+    console.error("Database error:", error);
+    return {
+      success: false,
+      code: 500,
+      message: "Error: update_password_to_database",
     };
   }
 };

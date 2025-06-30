@@ -6,6 +6,9 @@ export const UploadAvatarBody = t.Object({
 export const UploadCorpusBody = t.Object({
   files: t.Array(t.File()),
 });
+export const UploadNoteBody = t.Object({
+  content: t.String(),
+});
 export const RenameBody = t.Object({
   currentPublicId: t.String(),
   newFolder: t.String(),

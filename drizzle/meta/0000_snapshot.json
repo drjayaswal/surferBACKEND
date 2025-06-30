@@ -1,5 +1,5 @@
 {
-  "id": "6b29a8e1-62eb-4582-9fdc-fd5b9c6575cc",
+  "id": "df3b56b6-95fd-4b44-934e-3facbc693f53",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -90,6 +90,13 @@
         "corpuses": {
           "name": "corpuses",
           "type": "jsonb[]",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "'{}'"
+        },
+        "notes": {
+          "name": "notes",
+          "type": "json[]",
           "primaryKey": false,
           "notNull": false,
           "default": "'{}'"

@@ -1,9 +1,14 @@
 import { Elysia } from "elysia";
 import { authenticate_jwt } from "../middlewares";
-import { UploadAvatarBody, UploadCorpusBody } from "../types/upload.types";
+import {
+  UploadAvatarBody,
+  UploadCorpusBody,
+  UploadNoteBody,
+} from "../types/upload.types";
 import {
   find_user,
   upload_corpuses_to_database,
+  upload_note_to_database,
   upload_to_database,
 } from "../services/user.service";
 import { upload_to_s3, uploads_to_s3 } from "../services/s3.service";
@@ -119,7 +124,7 @@ const upload_routes = new Elysia({ prefix: "/upload" })
               }))
             );
 
-            const result = await uploads_to_s3(buffers, store.id); // ⬅️ returns [{ url, key }]
+            const result = await uploads_to_s3(buffers, store.id);
             if (!result.success || !result.data) {
               return { success: false, code: 500, message: "Upload failed" };
             }
@@ -151,6 +156,36 @@ const upload_routes = new Elysia({ prefix: "/upload" })
             };
           },
           { body: UploadCorpusBody }
+        )
+        .post(
+          "/note",
+          async ({ body, set, store }) => {
+            const userExists = await find_user(store.email);
+            if (!userExists.success) {
+              set.status = userExists.code;
+              return userExists;
+            }
+
+            const save_result = await upload_note_to_database(
+              store.id,
+              body.content
+            );
+            set.status = save_result.code;
+            if (!save_result.success) {
+              return {
+                success: save_result.success,
+                code: save_result.code,
+                message: save_result.message,
+              };
+            }
+            return {
+              success: save_result.success,
+              code: save_result.code,
+              message: save_result.message,
+              data: save_result.note,
+            };
+          },
+          { body: UploadNoteBody }
         )
   );
 export default upload_routes;
