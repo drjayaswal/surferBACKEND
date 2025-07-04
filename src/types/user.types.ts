@@ -12,5 +12,11 @@ export const UpdatePasswordBody = t.Object({
   new_password: t.String(),
   confirm_new_password: t.String(),
 });
-
+export const UpdateKeyBody = t.Object({
+  key: t.String(),
+});
+export const UpdateProfileBody = t.Object({
+  name: t.Optional(t.String()),
+  bio: t.Optional(t.String()),
+});
 export type UserType = (typeof UserSchema)["static"];

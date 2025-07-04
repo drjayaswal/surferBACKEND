@@ -3,7 +3,7 @@ import { t } from "elysia";
 export const UploadAvatarBody = t.Object({
   file: t.File(),
 });
-export const UploadCorpusBody = t.Object({
+export const UploadcorpusesBody = t.Object({
   files: t.Array(t.File()),
 });
 export const UploadNoteBody = t.Object({
@@ -14,8 +14,13 @@ export const RenameBody = t.Object({
   newFolder: t.String(),
   newFilename: t.Optional(t.String()),
 });
-
 export const UploadDirectory = t.Object({
   folder: t.String(),
   filename: t.String(),
 });
+
+export interface UploadableFile {
+  buffer: Buffer;
+  type: string;
+  name: string;
+}

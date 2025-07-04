@@ -1,11 +1,19 @@
 import { Elysia, t } from "elysia";
-import { authenticate_jwt } from "../middlewares";
+import { authenticate_jwt } from "../middleware";
 import {
   find_user,
+  update_apikey_to_database,
   update_password_to_database,
+  update_profile_to_database,
+  update_tfa_to_database,
 } from "../services/user.service";
-import { UpdatePasswordBody } from "../types/user.types";
+import {
+  UpdateKeyBody,
+  UpdatePasswordBody,
+  UpdateProfileBody,
+} from "../types/user.types";
 import { compare_password } from "../utils";
+import { find_connections } from "../services/connection.service";
 
 const user_routes = new Elysia({ prefix: "/user" })
   .state({ email: "", id: "" })
@@ -56,7 +64,7 @@ const user_routes = new Elysia({ prefix: "/user" })
               message: "No Such User",
             };
           }
-          console.log("send user data");
+          console.log("User Hydration");
           return {
             success: true,
             code: 200,
@@ -65,12 +73,17 @@ const user_routes = new Elysia({ prefix: "/user" })
                 ? {
                     id: user.data.id,
                     name: user.data.name,
+                    bio: user.data.bio,
+                    password_updated_at: user.data.password_updated_at,
                     email: user.data.email,
                     avatar: user.data.avatar,
                     refresh_token: user.data.refresh_token,
                     corpuses: user.data.corpuses,
                     notes: user.data.notes,
                     created_at: user.data.created_at,
+                    api_key_generated_at: user.data.api_key_generated_at,
+                    TFA_enabled: user.data.TFA_enabled,
+                    activity_logs: user.data.activity_logs,
                   }
                 : {
                     id: user.data.id,
@@ -122,6 +135,113 @@ const user_routes = new Elysia({ prefix: "/user" })
           },
           { body: UpdatePasswordBody }
         )
+        .post(
+          "/update-apikey",
+          async ({ set, store, body }) => {
+            const { key } = body;
+            const user = await find_user(store.email);
+            if (
+              !user ||
+              !user.data ||
+              !("id" in user.data && "refresh_token" in user.data)
+            ) {
+              set.status = 404;
+              return {
+                code: 404,
+                success: false,
+                message: "No Such User",
+              };
+            }
+            const response = await update_apikey_to_database(store.id, key);
+            set.status = response.code;
+            return response;
+          },
+          { body: UpdateKeyBody }
+        )
+        .post(
+          "/update-profile",
+          async ({ set, store, body }) => {
+            const { name, bio } = body;
+            if (!name && !bio) {
+              set.status = 400;
+              return {
+                code: 400,
+                success: false,
+                message: "Empty Body",
+              };
+            }
+            const user = await find_user(store.email);
+            if (
+              !user ||
+              !user.data ||
+              !("id" in user.data && "refresh_token" in user.data)
+            ) {
+              set.status = 404;
+              return {
+                code: 404,
+                success: false,
+                message: "No Such User",
+              };
+            }
+            const response = await update_profile_to_database(
+              store.id,
+              name,
+              bio
+            );
+            set.status = response.code;
+            return response;
+          },
+          { body: UpdateProfileBody }
+        )
+        .get("/update-tfa", async ({ set, store }) => {
+          const user = await find_user(store.email);
+          if (
+            !user ||
+            !user.data ||
+            !("id" in user.data && "refresh_token" in user.data)
+          ) {
+            set.status = 404;
+            return {
+              code: 404,
+              success: false,
+              message: "No Such User",
+            };
+          }
+          const response = await update_tfa_to_database(store.id);
+          set.status = response.code;
+          return response;
+        })
+        .get("/connections", async ({ set, store }) => {
+          const user = await find_user(store.email);
+          if (
+            !user ||
+            !user.data ||
+            !("id" in user.data && "refresh_token" in user.data)
+          ) {
+            set.status = 404;
+            return {
+              code: 404,
+              success: false,
+              message: "No Such User",
+            };
+          }
+          const connections = await find_connections(store.id);
+          set.status = connections.code;
+          if (!user.data) {
+            return {
+              code: connections.code,
+              success: connections.success,
+              message: connections.message,
+            };
+          }
+          console.log("Connection Hydration");
+          return {
+            code: connections.code,
+            success: connections.success,
+            message: connections.message,
+            data: connections.data,
+          };
+        })
   );
 
 export default user_routes;

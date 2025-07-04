@@ -1,8 +1,9 @@
 import { Elysia } from "elysia";
-import { authenticate_jwt } from "../middlewares";
+import { authenticate_jwt } from "../middleware";
 import {
+  UploadableFile,
   UploadAvatarBody,
-  UploadCorpusBody,
+  UploadcorpusesBody,
   UploadNoteBody,
 } from "../types/upload.types";
 import {
@@ -11,7 +12,10 @@ import {
   upload_note_to_database,
   upload_to_database,
 } from "../services/user.service";
-import { upload_to_s3, uploads_to_s3 } from "../services/s3.service";
+import {
+  upload_avatar_to_s3,
+  upload_corpuses_to_s3,
+} from "../services/s3.service";
 import { checkDateOrTimeRemaining } from "../utils";
 
 const upload_routes = new Elysia({ prefix: "/upload" })
@@ -72,13 +76,12 @@ const upload_routes = new Elysia({ prefix: "/upload" })
             }
 
             const buffer = await body.file.arrayBuffer();
-            const result = await upload_to_s3(
-              Buffer.from(buffer),
-              body.file.type,
-              store.id,
-              "avatar",
-              body.file.name
-            );
+            const file: UploadableFile = {
+              buffer: Buffer.from(buffer),
+              type: body.file.type,
+              name: body.file.name,
+            };
+            const result = await upload_avatar_to_s3(file, store.id);
 
             if (!result.success) {
               return {
@@ -100,6 +103,7 @@ const upload_routes = new Elysia({ prefix: "/upload" })
               success: result.success,
               code: 200,
               message: result.message,
+              data: { newActivity: save_avatar_response.data?.newActivity },
             };
           },
           { body: UploadAvatarBody }
@@ -124,12 +128,12 @@ const upload_routes = new Elysia({ prefix: "/upload" })
               }))
             );
 
-            const result = await uploads_to_s3(buffers, store.id);
+            const result = await upload_corpuses_to_s3(buffers, store.id);
             if (!result.success || !result.data) {
               return { success: false, code: 500, message: "Upload failed" };
             }
 
-            const corpusFiles = result.data.map((file, i) => ({
+            const corpusesFiles = result.data.map((file, i) => ({
               id: `COR-${Date.now()}-${i + 1}`,
               name: buffers[i].name,
               url: file.url,
@@ -140,7 +144,7 @@ const upload_routes = new Elysia({ prefix: "/upload" })
 
             const save_result = await upload_corpuses_to_database(
               store.id,
-              corpusFiles
+              corpusesFiles
             );
 
             if (!save_result.success) {
@@ -151,11 +155,14 @@ const upload_routes = new Elysia({ prefix: "/upload" })
             return {
               success: true,
               code: 200,
-              message: "Corpuses uploaded successfully",
-              data: corpusFiles,
+              message: "corpuses uploaded successfully",
+              data: {
+                corpusesFiles,
+                newActivity: save_result.data?.newActivity,
+              },
             };
           },
-          { body: UploadCorpusBody }
+          { body: UploadcorpusesBody }
         )
         .post(
           "/note",
@@ -182,7 +189,10 @@ const upload_routes = new Elysia({ prefix: "/upload" })
               success: save_result.success,
               code: save_result.code,
               message: save_result.message,
-              data: save_result.note,
+              data: {
+                newNote: save_result.data?.newNote,
+                newActivity: save_result.data?.newActivity,
+              },
             };
           },
           { body: UploadNoteBody }

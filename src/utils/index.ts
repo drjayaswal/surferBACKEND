@@ -156,3 +156,10 @@ export const checkDateOrTimeRemaining = (
 
   return `Try After ${d}d ${h}h ${m}m`;
 };
+
+export function createActivityLogEntry(activity_name: string) {
+  return {
+    activity_name,
+    created_at: new Date(),
+  };
+}

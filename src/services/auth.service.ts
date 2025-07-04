@@ -1,7 +1,8 @@
-import { eq } from "drizzle-orm";
+import { eq, sql } from "drizzle-orm";
 import db from "../config/db";
 import {
   compare_password,
+  createActivityLogEntry,
   generate_access_jwt,
   generate_refresh_jwt,
   verify_refresh_token,
@@ -9,7 +10,6 @@ import {
 import { user_model } from "../models/user.model";
 import { JwtPayload } from "jsonwebtoken";
 import { verify_otp } from "./otp.service";
-
 
 export const create_tokens = (email: string, id: string) => {
   const new_refresh_token = generate_refresh_jwt(email, id);
@@ -152,10 +152,15 @@ export const handle_login_by_otp = async (otp: number, email: string) => {
 
     const access_token = generate_access_jwt(email, user.id);
     const refresh_token = generate_refresh_jwt(email, user.id);
-
+    const newActivity = createActivityLogEntry("Login Successful via OTP ");
     await db
       .update(user_model)
-      .set({ refresh_token })
+      .set({
+        refresh_token,
+        activity_logs: sql`array_append(activity_logs, ${JSON.stringify(
+          newActivity
+        )}::json)`,
+      })
       .where(eq(user_model.email, email));
 
     console.log(
@@ -231,10 +236,17 @@ export const handle_login = async (email: string, password: string) => {
 
     const access_token = generate_access_jwt(email, user.id);
     const refresh_token = generate_refresh_jwt(email, user.id);
-
+    const newActivity = createActivityLogEntry(
+      "Login Successful via Password "
+    );
     await db
       .update(user_model)
-      .set({ refresh_token })
+      .set({
+        refresh_token,
+        activity_logs: sql`array_append(activity_logs, ${JSON.stringify(
+          newActivity
+        )}::json)`,
+      })
       .where(eq(user_model.email, email));
 
     console.log(

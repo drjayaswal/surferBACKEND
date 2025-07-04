@@ -67,7 +67,7 @@ const auth_routes = new Elysia({ prefix: "/auth" })
         );
         return verify_query_response;
       }
-      const user_id = create_unique_id("USR");
+      const user_id = create_unique_id("USER");
       const create_user_query_response = await create_user(
         user_id,
         name,

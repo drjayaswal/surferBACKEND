@@ -1,3 +1,4 @@
+import { UploadableFile } from "../types/upload.types";
 import { getExtension } from "../utils";
 import { s3 } from "../utils/s3.client";
 import { PutObjectCommand } from "@aws-sdk/client-s3";
@@ -8,28 +9,20 @@ if (!AWS_BUCKET_NAME || !AWS_REGION) {
   throw new Error("AWS S3 Bucket Name is missing");
 }
 
-export const upload_to_s3 = async (
-  fileBuffer: Buffer,
-  mimeType: string,
-  userId: string,
-  type: "avatar" | "corpus",
-  originalName: string
+export const upload_avatar_to_s3 = async (
+  file: UploadableFile,
+  userId: string
 ) => {
-  const folder = type === "avatar" ? "avatar" : "corpuses";
+  const filename = "AVATAR" + file.name.slice(file.name.lastIndexOf("."));
 
-  const filename =
-    type === "avatar"
-      ? "DP" + originalName.slice(originalName.lastIndexOf("."))
-      : `${Date.now()}-${originalName}`;
-
-  const key = `users/${userId}/${folder}/${filename}`;
+  const key = `users/${userId}/avatar/${filename}`;
 
   await s3.send(
     new PutObjectCommand({
       Bucket: AWS_BUCKET_NAME,
       Key: key,
-      Body: fileBuffer,
-      ContentType: mimeType,
+      Body: file.buffer,
+      ContentType: file.type,
     })
   );
 
@@ -42,15 +35,17 @@ export const upload_to_s3 = async (
   };
 };
 
-export const uploads_to_s3 = async (
-  files: { buffer: Buffer; type: string; name: string }[],
+export const upload_corpuses_to_s3 = async (
+  files: UploadableFile[],
   userId: string
 ) => {
   const uploaded = [];
   let i = 0;
   for (const file of files) {
     const ext = getExtension(file.name);
-    const key = `users/${userId}/corpuses/${Date.now()}-${i + 1}${ext}`;
+    const key = `users/${userId}/corpuses/CORPUS-${Date.now()}-${
+      i + 1
+    }${ext}`;
     await s3.send(
       new PutObjectCommand({
         Bucket: AWS_BUCKET_NAME,
@@ -66,7 +61,35 @@ export const uploads_to_s3 = async (
 
   return {
     success: true,
-    message: "Corpus files uploaded successfully",
+    message: "corpuses files uploaded successfully",
+    data: uploaded,
+  };
+};
+
+export const upload_to_s3 = async (files: UploadableFile[], userId: string) => {
+  const uploaded = [];
+  let i = 0;
+  for (const file of files) {
+    const ext = getExtension(file.name);
+    const key = `users/${userId}/attachments/ATTACHMENT-${Date.now()}-${
+      i + 1
+    }${ext}`;
+    await s3.send(
+      new PutObjectCommand({
+        Bucket: AWS_BUCKET_NAME,
+        Key: key,
+        Body: file.buffer,
+        ContentType: file.type,
+      })
+    );
+
+    const url = `https://${AWS_BUCKET_NAME}.s3.${AWS_REGION}.amazonaws.com/${key}`;
+    uploaded.push({ url });
+  }
+
+  return {
+    success: true,
+    message: "corpuses files uploaded successfully",
     data: uploaded,
   };
 };
