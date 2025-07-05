@@ -3,7 +3,7 @@ import { authenticate_jwt } from "../middleware";
 import {
   UploadableFile,
   UploadAvatarBody,
-  UploadcorpusesBody,
+  UploadCorpusesBody,
   UploadNoteBody,
 } from "../types/upload.types";
 import {
@@ -162,7 +162,7 @@ const upload_routes = new Elysia({ prefix: "/upload" })
               },
             };
           },
-          { body: UploadcorpusesBody }
+          { body: UploadCorpusesBody }
         )
         .post(
           "/note",

@@ -3,7 +3,7 @@ import { t } from "elysia";
 export const UploadAvatarBody = t.Object({
   file: t.File(),
 });
-export const UploadcorpusesBody = t.Object({
+export const UploadCorpusesBody = t.Object({
   files: t.Array(t.File()),
 });
 export const UploadNoteBody = t.Object({
