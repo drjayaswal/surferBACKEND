@@ -65,7 +65,8 @@ export const connection_routes = new Elysia({ prefix: "/connection" })
             uploaded = upload_result.data;
           }
 
-          const answer = "Hiklsabdlkshbfjlaknfbla fkwfbdalkjfnakls asdjfnalksjdf";
+          const answer =
+            "Hi This is a sample response from AI, The AI is still under BUILT !";
 
           const response = await save_connection(
             store.id,

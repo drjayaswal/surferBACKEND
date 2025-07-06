@@ -10,7 +10,7 @@ const GenerateOtpSchema = t.Object({
 const VerifySignupOtpSchema = t.Object({
   name: t.String(),
   password: t.String(),
-  email: t.Optional(t.String()),
+  email: t.String(),
   otp: t.Number(),
 });
 

@@ -24,19 +24,8 @@ const auth_routes = new Elysia({ prefix: "/auth" })
     async ({ body, set }) => {
       const { email } = body;
 
-      if (!email) {
-        set.status = 404;
-        console.log(
-          `[SERVER]  :  Email Missing  :  ${new Date().toLocaleString()}`
-        );
-        return {
-          success: false,
-          code: 404,
-          message: "Email Missing",
-        };
-      }
-
       const otp_response = await generate_otp(email);
+
       set.status = otp_response.code;
       return otp_response;
     },
@@ -47,19 +36,8 @@ const auth_routes = new Elysia({ prefix: "/auth" })
     async ({ body, set, cookie }) => {
       const { email, name, password, otp } = body;
 
-      if (!email) {
-        set.status = 404;
-        console.log(
-          `[SERVER]  :  Email Missing  :  ${new Date().toLocaleString()}`
-        );
-        return {
-          success: false,
-          code: 404,
-          message: "Email Missing",
-        };
-      }
-
       const verify_query_response = await verify_otp(otp, email);
+      
       if (!verify_query_response.success) {
         set.status = verify_query_response.code;
         console.log(
@@ -67,7 +45,9 @@ const auth_routes = new Elysia({ prefix: "/auth" })
         );
         return verify_query_response;
       }
+      
       const user_id = create_unique_id("USER");
+      
       const create_user_query_response = await create_user(
         user_id,
         name,

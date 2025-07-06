@@ -7,6 +7,14 @@ export const UserSchema = t.Object({
   password: t.String(),
   created_at: t.Date(),
 });
+export const ConnectBody = t.Object({
+  email: t.String(),
+  message: t.String(),
+});
+export const HelpBody = t.Object({
+  email: t.String(),
+  message: t.String(),
+});
 export const UpdatePasswordBody = t.Object({
   old_password: t.String(),
   new_password: t.String(),

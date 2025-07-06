@@ -5,6 +5,7 @@ import user_routes from "./routes/user.routes";
 import cors from "@elysiajs/cors";
 import upload_routes from "./routes/upload.routes";
 import { connection_routes } from "./routes/connection.routes";
+import { public_routes } from "./routes/public.routes";
 
 const BACKEND = process.env.BACKEND_URL;
 const FRONTEND = process.env.FRONTEND_URL;
@@ -24,6 +25,7 @@ const app = new Elysia({ prefix: "/api" })
     })
   )
   .use(auth_routes)
+  .use(public_routes)
   .use(user_routes)
   .use(upload_routes)
   .use(connection_routes)
