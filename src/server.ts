@@ -6,18 +6,13 @@ import cors from "@elysiajs/cors";
 import upload_routes from "./routes/upload.routes";
 import { connection_routes } from "./routes/connection.routes";
 import { public_routes } from "./routes/public.routes";
-import chalk from "chalk";
 
 const BACKEND = process.env.BACKEND_URL;
 const FRONTEND = process.env.FRONTEND_URL;
 const PORT = process.env.BACKEND_PORT;
 
 if (!BACKEND || !FRONTEND || !PORT) {
-  console.log(
-    chalk.bgGreenBright(
-      `[SVR]  :  ENV missing  :  ${new Date().toLocaleString()}`
-    )
-  );
+  console.log(`[SVR]  :  ENV missing  :  ${new Date().toLocaleString()}`);
   throw new Error("[SYS]    ENV missing");
 }
 
