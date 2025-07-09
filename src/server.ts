@@ -6,14 +6,19 @@ import cors from "@elysiajs/cors";
 import upload_routes from "./routes/upload.routes";
 import { connection_routes } from "./routes/connection.routes";
 import { public_routes } from "./routes/public.routes";
+import chalk from "chalk";
 
 const BACKEND = process.env.BACKEND_URL;
 const FRONTEND = process.env.FRONTEND_URL;
 const PORT = process.env.BACKEND_PORT;
 
 if (!BACKEND || !FRONTEND || !PORT) {
-  console.log(`[SERVER]  :  ENV missing  :  ${new Date().toLocaleString()}`);
-  throw new Error("[SYSTEM]    ENV missing");
+  console.log(
+    chalk.bgGreenBright(
+      `[SVR]  :  ENV missing  :  ${new Date().toLocaleString()}`
+    )
+  );
+  throw new Error("[SYS]    ENV missing");
 }
 
 const app = new Elysia({ prefix: "/api" })
@@ -31,4 +36,4 @@ const app = new Elysia({ prefix: "/api" })
   .use(connection_routes)
   .listen(PORT);
 
-console.log(`[SERVER]  :  Server Connected  :  ${new Date().toLocaleString()}`);
+console.log(`[SVR]  :  Connected  :  ${new Date().toLocaleString()}`);
