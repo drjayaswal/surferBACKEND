@@ -63,6 +63,7 @@ const auth_routes = new Elysia({ prefix: "/auth" })
           value: create_user_query_response.data.refresh_token,
           httpOnly: true,
           secure: true,
+          sameSite: "none",
           maxAge: 60 * 60 * 24 * 7,
           path: "/",
         });
@@ -70,6 +71,7 @@ const auth_routes = new Elysia({ prefix: "/auth" })
           value: create_user_query_response.data.access_token,
           httpOnly: true,
           secure: true,
+          sameSite: "none",
           maxAge: 60 * 60 * 24,
           path: "/",
         });
@@ -149,6 +151,7 @@ const auth_routes = new Elysia({ prefix: "/auth" })
       value: tokens.new_refresh_token,
       httpOnly: true,
       secure: true,
+      sameSite: "none",
       maxAge: 60 * 60 * 24 * 7,
       path: "/",
     });
@@ -156,6 +159,7 @@ const auth_routes = new Elysia({ prefix: "/auth" })
       value: tokens.new_access_token,
       httpOnly: true,
       secure: true,
+      sameSite: "none",
       maxAge: 60 * 60 * 24,
       path: "/",
     });
@@ -201,6 +205,7 @@ const auth_routes = new Elysia({ prefix: "/auth" })
               value: login_response.data?.refresh_token,
               httpOnly: true,
               secure: true,
+              sameSite: "none",
               maxAge: 60 * 60 * 24 * 7,
               path: "/",
             });
@@ -208,6 +213,7 @@ const auth_routes = new Elysia({ prefix: "/auth" })
               value: login_response.data?.access_token,
               httpOnly: true,
               secure: true,
+              sameSite: "none",
               maxAge: 60 * 60 * 24,
               path: "/",
             });
@@ -240,6 +246,7 @@ const auth_routes = new Elysia({ prefix: "/auth" })
           value: response.data.refresh_token,
           httpOnly: true,
           secure: true,
+          sameSite: "none",
           maxAge: 60 * 60 * 24 * 7,
           path: "/",
         });
@@ -247,6 +254,7 @@ const auth_routes = new Elysia({ prefix: "/auth" })
           value: response.data.access_token,
           httpOnly: true,
           secure: true,
+          sameSite: "none",
           maxAge: 60 * 60 * 24,
           path: "/",
         });
@@ -286,6 +294,7 @@ const auth_routes = new Elysia({ prefix: "/auth" })
         value: response.data?.refresh_token,
         httpOnly: true,
         secure: true,
+        sameSite: "none",
         maxAge: 60 * 60 * 24 * 7,
         path: "/",
       });
@@ -293,6 +302,7 @@ const auth_routes = new Elysia({ prefix: "/auth" })
         value: response.data?.access_token,
         httpOnly: true,
         secure: true,
+        sameSite: "none",
         maxAge: 60 * 60 * 24,
         path: "/",
       });
