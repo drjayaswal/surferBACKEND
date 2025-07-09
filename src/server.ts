@@ -9,9 +9,8 @@ import { public_routes } from "./routes/public.routes";
 
 const BACKEND = process.env.BACKEND_URL;
 const FRONTEND = process.env.FRONTEND_URL;
-const PORT = process.env.BACKEND_PORT;
 
-if (!BACKEND || !FRONTEND || !PORT) {
+if (!BACKEND || !FRONTEND) {
   console.log(`[SVR]  :  ENV missing  :  ${new Date().toLocaleString()}`);
   throw new Error("[SYS]    ENV missing");
 }
@@ -20,7 +19,7 @@ const app = new Elysia({ prefix: "/" })
   .all("/", "Welcome to Surfer API..!")
   .use(
     cors({
-      origin: "*",
+      origin: FRONTEND,
       credentials: true,
     })
   )
@@ -29,6 +28,6 @@ const app = new Elysia({ prefix: "/" })
   .use(user_routes)
   .use(upload_routes)
   .use(connection_routes)
-  .listen(PORT);
+  .listen(5000);
 
 console.log(`[SVR]  :  Connected  :  ${new Date().toLocaleString()}`);
