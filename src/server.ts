@@ -7,10 +7,16 @@ import upload_routes from "./routes/upload.routes";
 import { connection_routes } from "./routes/connection.routes";
 import { public_routes } from "./routes/public.routes";
 
-// const FRONTEND = "https://surfer-frontend.vercel.app";
-const FRONTEND = "http://localhost:3000";
+const BACKEND = process.env.BACKEND_URL;
+const FRONTEND = process.env.FRONTEND_URL;
+const PORT = process.env.BACKEND_PORT;
 
-const app = new Elysia({ prefix: "/" })
+if (!BACKEND || !FRONTEND || !PORT) {
+  console.log(`[SERVER]  :  ENV missing  :  ${new Date().toLocaleString()}`);
+  throw new Error("[SYSTEM]    ENV missing");
+}
+
+const app = new Elysia()
   .all("/", "Welcome to Surfer API..!")
   .use(
     cors({
@@ -23,6 +29,6 @@ const app = new Elysia({ prefix: "/" })
   .use(user_routes)
   .use(upload_routes)
   .use(connection_routes)
-  .listen(4000);
+  .listen(PORT);
 
-console.log(`[SVR]  :  Connected  :  ${new Date().toLocaleString()}`);
+console.log(`[SERVER]  :  Server Connected  :  ${new Date().toLocaleString()}`);
