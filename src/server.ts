@@ -16,11 +16,11 @@ if (!BACKEND || !FRONTEND || !PORT) {
   throw new Error("[SYS]    ENV missing");
 }
 
-const app = new Elysia({ prefix: "/api" })
+const app = new Elysia({ prefix: "/" })
   .all("/", "Welcome to Surfer API..!")
   .use(
     cors({
-      origin: FRONTEND,
+      origin: "*",
       credentials: true,
     })
   )
