@@ -212,10 +212,6 @@ export const handle_login = async (email: string, password: string) => {
         success: false,
         code: 403,
         message: "Account is not password protected",
-        help: {
-          message: "Login via OTP!",
-          link: `${process.env.FRONTEND_URL}/forgot-password`,
-        },
       };
     }
 
