@@ -10,6 +10,8 @@ export default defineConfig({
     user: process.env.DB_USER || "surfer",
     password: process.env.DB_PASSWORD || "surfer",
     database: process.env.DB_NAME || "surfer_db",
+    ssl: true, // important for deployment
   },
   schema: ["./src/models/*"],
+  out: "./drizzle",
 });

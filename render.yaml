@@ -1,0 +1,21 @@
+services:
+  - type: web
+    name: surfer-backend
+    env: node
+    plan: free
+    buildCommand: |
+      curl -fsSL https://bun.sh/install | bash
+      export BUN_INSTALL="$HOME/.bun"
+      export PATH="$BUN_INSTALL/bin:$PATH"
+      bun install
+    startCommand: |
+      export BUN_INSTALL="$HOME/.bun"
+      export PATH="$BUN_INSTALL/bin:$PATH"
+      bun run src/server.ts
+    envVars:
+      - key: DATABASE_URL
+        fromDotEnv: true
+      - key: BACKEND_URL
+        fromDotEnv: true
+      - key: FRONTEND_URL
+        fromDotEnv: true
