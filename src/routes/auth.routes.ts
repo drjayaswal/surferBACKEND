@@ -64,6 +64,7 @@ const auth_routes = new Elysia({ prefix: "/auth" })
           httpOnly: true,
           secure: true,
           sameSite: "none",
+          domain: process.env.FRONTEND_URL_CK,
           maxAge: 60 * 60 * 24 * 7,
           path: "/",
         });
@@ -73,6 +74,7 @@ const auth_routes = new Elysia({ prefix: "/auth" })
           secure: true,
           sameSite: "none",
           maxAge: 60 * 60 * 24,
+          domain: process.env.FRONTEND_URL_CK,
           path: "/",
         });
         console.log(
@@ -151,6 +153,7 @@ const auth_routes = new Elysia({ prefix: "/auth" })
       value: tokens.new_refresh_token,
       httpOnly: true,
       secure: true,
+      domain: process.env.FRONTEND_URL_CK,
       sameSite: "none",
       maxAge: 60 * 60 * 24 * 7,
       path: "/",
@@ -159,6 +162,7 @@ const auth_routes = new Elysia({ prefix: "/auth" })
       value: tokens.new_access_token,
       httpOnly: true,
       secure: true,
+      domain: process.env.FRONTEND_URL_CK,
       sameSite: "none",
       maxAge: 60 * 60 * 24,
       path: "/",
@@ -205,6 +209,7 @@ const auth_routes = new Elysia({ prefix: "/auth" })
               value: login_response.data?.refresh_token,
               httpOnly: true,
               secure: true,
+              domain: process.env.FRONTEND_URL_CK,
               sameSite: "none",
               maxAge: 60 * 60 * 24 * 7,
               path: "/",
@@ -214,6 +219,7 @@ const auth_routes = new Elysia({ prefix: "/auth" })
               httpOnly: true,
               secure: true,
               sameSite: "none",
+              domain: process.env.FRONTEND_URL_CK,
               maxAge: 60 * 60 * 24,
               path: "/",
             });
@@ -245,6 +251,7 @@ const auth_routes = new Elysia({ prefix: "/auth" })
         cookie["refresh_token"].set({
           value: response.data.refresh_token,
           httpOnly: true,
+          domain: process.env.FRONTEND_URL_CK,
           secure: true,
           sameSite: "none",
           maxAge: 60 * 60 * 24 * 7,
@@ -257,6 +264,7 @@ const auth_routes = new Elysia({ prefix: "/auth" })
           sameSite: "none",
           maxAge: 60 * 60 * 24,
           path: "/",
+          domain: process.env.FRONTEND_URL_CK,
         });
         console.log(
           `[SERVER]   Set Tokens to Cookies : ${new Date().toLocaleString()}`
@@ -295,6 +303,7 @@ const auth_routes = new Elysia({ prefix: "/auth" })
         httpOnly: true,
         secure: true,
         sameSite: "none",
+        domain: process.env.FRONTEND_URL_CK,
         maxAge: 60 * 60 * 24 * 7,
         path: "/",
       });
@@ -302,6 +311,7 @@ const auth_routes = new Elysia({ prefix: "/auth" })
         value: response.data?.access_token,
         httpOnly: true,
         secure: true,
+        domain: process.env.FRONTEND_URL_CK,
         sameSite: "none",
         maxAge: 60 * 60 * 24,
         path: "/",
