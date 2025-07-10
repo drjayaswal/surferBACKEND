@@ -59,7 +59,6 @@ const auth_routes = new Elysia({ prefix: "/auth" })
         return create_user_query_response;
       }
       if (create_user_query_response.data) {
-        console.log(process.env.FRONTEND_URL_CK);
         cookie["refresh_token"].set({
           value: create_user_query_response.data.refresh_token,
           httpOnly: true,
