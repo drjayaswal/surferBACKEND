@@ -29,6 +29,6 @@ const app = new Elysia()
   .use(user_routes)
   .use(upload_routes)
   .use(connection_routes)
-  .listen(PORT);
+  .listen(PORT|| 4000);
 
 console.log(`[SERVER]  :  Server Connected  :  ${new Date().toLocaleString()}`);
